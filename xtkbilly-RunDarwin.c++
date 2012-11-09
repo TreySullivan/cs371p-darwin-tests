@@ -6,8 +6,8 @@
 
 /*
 To run the program:
-    % g++ -pedantic -std=c++0x -Wall RunCollatz.c++ -o RunCollatz.c++.app
-    % valgrind RunDarwin.c++.app > RunDarwin.out
+    % g++ -pedantic -std=c++0x -Wall RunDarwin.c++ -o RunDarwin.app
+    % valgrind RunDarwin.app > RunDarwin.out
 
 To configure Doxygen:
     doxygen -g
@@ -30,6 +30,7 @@ To document the program:
 #include <cstdlib>   // rand, srand
 #include <iostream>  // cout, endl
 #include <stdexcept> // invalid_argument, out_of_range
+#include "Darwin.h"
 
 // ----
 // main
@@ -48,8 +49,8 @@ int main () {
      1: go 0
     */
 	Species food('f');
-	food.addInstruction("left");
-	food.addInstruction("go", 0);
+	food.addAction("left");
+	food.addControl("go", 0);
 
     // ------
     // hopper
@@ -61,8 +62,8 @@ int main () {
     */
 
 	Species hopper('h');
-	hopper.addInstruction("hop");
-	hopper.addInstruction("go", 0);
+	hopper.addAction("hop");
+	hopper.addControl("go", 0);
 
     // -----
     // rover
@@ -83,17 +84,17 @@ int main () {
     */
 
 	Species rover('r');
-	rover.addInstruction("if_enemy", 9);
-	rover.addInstruction("if_empty", 7);
-	rover.addInstruction("if_random", 5);
-	rover.addInstruction("left");
-	rover.addInstruction("go", 0);
-	rover.addInstruction("right");
-	rover.addInstruction("go", 0);
-	rover.addInstruction("hop");
-	rover.addInstruction("go", 0);
-	rover.addInstruction("infect");
-	rover.addInstruction("go", 0);
+	rover.addControl("if_enemy", 9);
+	rover.addControl("if_empty", 7);
+	rover.addControl("if_random", 5);
+	rover.addAction("left");
+	rover.addControl("go", 0);
+	rover.addAction("right");
+	rover.addControl("go", 0);
+	rover.addAction("hop");
+	rover.addControl("go", 0);
+	rover.addAction("infect");
+	rover.addControl("go", 0);
 
     // ----
     // trap
@@ -108,11 +109,26 @@ int main () {
     */
 
 	Species trap('t');
-	trap.addInstruction("if_enemy", 3);
-	trap.addInstruction("left");
-	trap.addInstruction("go", 0);
-	trap.addInstruction("infect");
-	trap.addInstruction("go", 0);
+	trap.addControl("if_enemy", 3);
+	trap.addAction("left");
+	trap.addControl("go", 0);
+	trap.addAction("infect");
+	trap.addControl("go", 0);
+
+
+	// ----
+    // best
+    // ----
+	Species best('b');
+	best.addControl("if_enemy", 6);
+	best.addControl("if_empty", 4);
+	best.addAction("left");
+	best.addControl("go", 0);
+	best.addAction("hop");
+	best.addControl("go", 0);
+	best.addAction("infect");
+	best.addControl("go", 0);
+
 
     // ----------
     // darwin 8x8
@@ -131,6 +147,15 @@ int main () {
         Simulate 5 moves.
         Print every grid.
         */
+		Grid g1(8, 8);
+		g1.place(food, 0, 0, Creature::EAST);
+		g1.place(hopper, 3, 3, Creature::NORTH);
+		g1.place(hopper, 3, 4, Creature::EAST);
+		g1.place(hopper, 4, 4, Creature::SOUTH);
+		g1.place(hopper, 4, 3, Creature::WEST);
+		g1.place(food, 7, 7, Creature::NORTH);
+
+		g1.simulate(5);
         }
     catch (const invalid_argument&) {
         assert(false);}
@@ -152,6 +177,13 @@ int main () {
         Simulate 5 moves.
         Print every grid.
         */
+		Grid g2(7, 9);
+		g2.place(trap, 0, 0, Creature::SOUTH);
+		g2.place(hopper, 3, 2, Creature::EAST);
+		g2.place(rover, 5, 4, Creature::NORTH);
+		g2.place(trap, 6, 8, Creature::WEST);
+
+		g2.simulate(5);
         }
     catch (const invalid_argument&) {
         assert(false);}
@@ -180,6 +212,43 @@ int main () {
         Simulate 1000 moves.
         Print every 100th grid.
         */
+		Grid g3(72, 72);
+		int n;
+
+		n = 0;
+		while (n < 10) {
+			int p = rand() % 5184;
+			int d = rand() % 4;
+			g3.place(food, p / 72, p % 72, d);
+			++n;
+		}
+
+		n = 0;
+		while (n < 10) {
+			int p = rand() % 5184;
+			int d = rand() % 4;
+			g3.place(hopper, p / 72, p % 72, d);
+			++n;
+		}
+
+		n = 0;
+		while (n < 10) {
+			int p = rand() % 5184;
+			int d = rand() % 4;
+			g3.place(rover, p / 72, p % 72, d);
+			++n;
+		}
+
+		n = 0;
+		while (n < 10) {
+			int p = rand() % 5184;
+			int d = rand() % 4;
+			g3.place(trap, p / 72, p % 72, d);
+			++n;
+		}
+
+		g3.simulate(1000);
+
         }
     catch (const invalid_argument&) {
         assert(false);}
@@ -210,10 +279,181 @@ int main () {
         Best MUST outnumber ALL other species for the bonus pts.
         Print every 100th grid.
         */
+		Grid g4(72, 72);
+		int n;
+
+		n = 0;
+		while (n < 10) {
+			int p = rand() % 5184;
+			int d = rand() % 4;
+			g4.place(food, p / 72, p % 72, d);
+			++n;
+		}
+
+		n = 0;
+		while (n < 10) {
+			int p = rand() % 5184;
+			int d = rand() % 4;
+			g4.place(hopper, p / 72, p % 72, d);
+			++n;
+		}
+
+		n = 0;
+		while (n < 10) {
+			int p = rand() % 5184;
+			int d = rand() % 4;
+			g4.place(rover, p / 72, p % 72, d);
+			++n;
+		}
+
+		n = 0;
+		while (n < 10) {
+			int p = rand() % 5184;
+			int d = rand() % 4;
+			g4.place(trap, p / 72, p % 72, d);
+			++n;
+		}
+
+		n = 0;
+		while (n < 10) {
+			int p = rand() % 5184;
+			int d = rand() % 4;
+			g4.place(best, p / 72, p % 72, d);
+			++n;
+		}
+
+		g4.simulate(1000);
+
         }
     catch (const invalid_argument&) {
         assert(false);}
     catch (const out_of_range&) {
         assert(false);}
 
+	// ----------
+    // darwin 1x5
+    // ----------
+
+    try {
+        cout << "*** Darwin 1x5 ***" << endl;
+
+		Grid g5(1, 5);
+		g5.place(hopper, 0, 0, Creature::EAST);
+		g5.place(trap, 0, 4, Creature::SOUTH);
+
+		g5.simulate(5);
+        }
+    catch (const invalid_argument&) {
+        assert(false);}
+    catch (const out_of_range&) {
+        assert(false);}
+
+	// ----------
+    // darwin 5x5
+    // ----------
+
+    try {
+        cout << "*** Darwin 5x5 ***" << endl;
+
+		Grid g6(5, 5);
+		g6.place(best, 0, 0, Creature::EAST);
+		g6.place(best, 0, 4, Creature::SOUTH);
+		g6.place(best, 4, 0, Creature::NORTH);
+		g6.place(best, 4, 4, Creature::WEST);
+
+		g6.simulate(5);
+        }
+    catch (const invalid_argument&) {
+        assert(false);}
+    catch (const out_of_range&) {
+        assert(false);}
+
+	// ----------
+    // darwin 30x30
+    // ----------
+
+    try {
+        cout << "*** Darwin 30x30 ***" << endl;
+
+		Grid g7(30, 30);
+		int n = 0;
+		while (n < 30) {
+			int m = 0;
+			while (m < 30) {
+				if (n == 15 && m == 15) {
+					g7.place(trap, n, m, 0);
+				} else {
+					g7.place(food, n, m, 0);
+				}
+				++m;
+			}
+			++n;
+		}
+
+		g7.simulate(15);
+        }
+    catch (const invalid_argument&) {
+        assert(false);}
+    catch (const out_of_range&) {
+        assert(false);}
+
+	// ----------
+    // darwin 50x50
+    // ----------
+
+	try {
+        cout << "*** Darwin 50x50 ***" << endl;
+		srand(0);
+
+		Grid g8(50, 50);
+		int n = 0;
+		while (n < 50) {
+			int p = rand() % 2500;
+			g8.place(food, p / 50, p % 50);
+			++n;
+		}
+
+		int q = rand() % 2500;
+		g8.place(best, q / 50, q % 50);
+
+		g8.simulate(15);
+        }
+    catch (const invalid_argument&) {
+        assert(false);}
+    catch (const out_of_range&) {
+        assert(false);}
+
+
+	// darwin 10x10
+	try {
+        cout << "*** Darwin 10x10 ***" << endl;
+		srand(0);
+
+		Grid g9(10, 10);
+		int p = rand() % 100;
+		g9.place(food, p / 10, p % 10);
+		g9.place(rover, p/ 10, p % 10);
+
+		g9.simulate(5);
+        }
+    catch (const invalid_argument&) {
+        assert(false);}
+    catch (const out_of_range&) {
+        assert(false);}
+
+	// darwin 7x7
+	try {
+        cout << "*** Darwin 7x7 ***" << endl;
+		Grid g10(7, 7);
+
+		g10.place(food, 3, 3);
+		g10.place(best, 0, 0, Creature::SOUTH);
+
+		g10.simulate(10);
+        }
+    catch (const invalid_argument&) {
+        assert(false);}
+    catch (const out_of_range&) {
+        assert(false);}
+	
     return 0;}
