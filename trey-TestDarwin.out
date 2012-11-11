@@ -1,0 +1,30 @@
+==35060== Memcheck, a memory error detector
+==35060== Copyright (C) 2002-2011, and GNU GPL'd, by Julian Seward et al.
+==35060== Using Valgrind-3.7.0 and LibVEX; rerun with -h for copyright info
+==35060== Command: ./TestDarwin.app
+==35060== 
+--35060-- ./TestDarwin.app:
+--35060-- dSYM directory is missing; consider using --dsymutil=yes
+TestDarwin.c++
+...................................................
+
+
+OK (51 tests)
+
+
+Done.
+==35060== 
+==35060== HEAP SUMMARY:
+==35060==     in use at exit: 17,372 bytes in 39 blocks
+==35060==   total heap usage: 2,089 allocs, 2,050 frees, 245,943 bytes allocated
+==35060== 
+==35060== LEAK SUMMARY:
+==35060==    definitely lost: 0 bytes in 0 blocks
+==35060==    indirectly lost: 0 bytes in 0 blocks
+==35060==      possibly lost: 0 bytes in 0 blocks
+==35060==    still reachable: 17,372 bytes in 39 blocks
+==35060==         suppressed: 0 bytes in 0 blocks
+==35060== Rerun with --leak-check=full to see details of leaked memory
+==35060== 
+==35060== For counts of detected and suppressed errors, rerun with: -v
+==35060== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 1 from 1)
